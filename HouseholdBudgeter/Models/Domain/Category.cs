@@ -15,5 +15,10 @@ namespace HouseholdBudgeter.Models.Domain
 
         public virtual Household Household { get; set; }
         public int HouseholdId { get; set; }
+
+        public Category()
+        {
+            DateCreated = DateTime.Now;
+        }
     }
 }

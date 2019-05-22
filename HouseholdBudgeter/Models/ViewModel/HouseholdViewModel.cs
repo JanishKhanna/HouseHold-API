@@ -14,6 +14,8 @@ namespace HouseholdBudgeter.Models.ViewModel
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
 
+        public List<CategoryViewModel> Categories { get; set; }
+
         public HouseholdViewModel()
         {
 
@@ -26,6 +28,7 @@ namespace HouseholdBudgeter.Models.ViewModel
             Description = household.Description;
             DateCreated = household.DateCreated;
             DateUpdated = household.DateUpdated;
+            Categories = household.Categories.Select(p => new CategoryViewModel(p)).ToList();
         }
     }
 }

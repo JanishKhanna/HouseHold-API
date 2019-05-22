@@ -34,7 +34,9 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            return Ok(myHouseHold);
+            var viewModel = new HouseholdViewModel(myHouseHold);
+
+            return Ok(viewModel);
         }
 
         [Authorize]
@@ -47,11 +49,16 @@ namespace HouseholdBudgeter.Controllers
                 return BadRequest(ModelState);
             }
 
+            var userId = User.Identity.GetUserId();
+            var owner = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+
             var houseHold = new Household()
             {
                 Name = model.Name,
                 Description = model.Description,
-                DateCreated = DateTime.Now
+                DateCreated = DateTime.Now,
+                OwnerOfHouse = owner,
+                OwnerOfHouseId = owner.Id
             };
 
             DbContext.Households.Add(houseHold);
