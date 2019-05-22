@@ -10,7 +10,7 @@ using System.Web;
 
 namespace HouseholdBudgeter.Models
 {
-    public class EmailService
+    public class EmailService : IIdentityMessageService
     {
         private string SmtpHost = ConfigurationManager.
             AppSettings["SmtpHost"];

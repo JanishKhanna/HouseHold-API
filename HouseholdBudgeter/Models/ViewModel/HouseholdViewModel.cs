@@ -15,6 +15,10 @@ namespace HouseholdBudgeter.Models.ViewModel
         public DateTime? DateUpdated { get; set; }
 
         public List<CategoryViewModel> Categories { get; set; }
+        
+        public List<UserViewModel> InvitedUsers { get; set; }
+
+        public List<UserViewModel> JoinedUsers { get; set; }
 
         public HouseholdViewModel()
         {
@@ -29,6 +33,8 @@ namespace HouseholdBudgeter.Models.ViewModel
             DateCreated = household.DateCreated;
             DateUpdated = household.DateUpdated;
             Categories = household.Categories.Select(p => new CategoryViewModel(p)).ToList();
+            InvitedUsers = household.InvitedUsers.Select(p => new UserViewModel(p)).ToList();
+            JoinedUsers = household.JoinedUsers.Select(p => new UserViewModel(p)).ToList();
         }
     }
 }

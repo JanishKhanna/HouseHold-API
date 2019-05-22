@@ -112,5 +112,55 @@ namespace HouseholdBudgeter.Controllers
 
             return Ok(viewModel);
         }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("delete-category/{id:int}")]
+        public IHttpActionResult DeleteCategory(int id)
+        {
+            var userId = User.Identity.GetUserId();
+
+            var category = DbContext.Categories.FirstOrDefault(p => p.Id == id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (userId != category.Household.OwnerOfHouseId)
+            {
+                return BadRequest("Sorry, You are not allowed to delete categories of this household.");
+            }
+
+            category.Household.Categories.Remove(category);
+            DbContext.SaveChanges();
+
+            return Ok($"You have deleted category with id:{category.Id}");
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("list-of-categories")]
+        public IHttpActionResult ListOfCategories(int id)
+        {
+            var userId = User.Identity.GetUserId();
+            var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
+
+            if (houseHold == null)
+            {
+                return NotFound();
+            }
+
+            var currentUser = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+
+            if (currentUser != houseHold.OwnerOfHouse || !houseHold.JoinedUsers.Contains(currentUser))
+            {
+                return Unauthorized();
+            }
+
+            var viewModel = houseHold.Categories.Select(p => new CategoryViewModel(p)).ToList();
+
+            return Ok(viewModel);
+        }
     }
 }

@@ -223,13 +223,17 @@
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\BindingModel\CategoryBindingModel.cs" />
+    <Compile Include="Models\BindingModel\ForgotPasswordBindingModel.cs" />
     <Compile Include="Models\BindingModel\HouseholdBindingModel.cs" />
+    <Compile Include="Models\BindingModel\InviteUserBindingModel.cs" />
+    <Compile Include="Models\BindingModel\ResetPasswordBindingModel.cs" />
     <Compile Include="Models\Domain\Category.cs" />
     <Compile Include="Models\Domain\Household.cs" />
     <Compile Include="Models\EmailService.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ViewModel\CategoryViewModel.cs" />
     <Compile Include="Models\ViewModel\HouseholdViewModel.cs" />
+    <Compile Include="Models\ViewModel\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
