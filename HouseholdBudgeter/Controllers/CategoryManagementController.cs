@@ -132,7 +132,7 @@ namespace HouseholdBudgeter.Controllers
                 return BadRequest("Sorry, You are not allowed to delete categories of this household.");
             }
 
-            category.Household.Categories.Remove(category);
+            DbContext.Categories.Remove(category);
             DbContext.SaveChanges();
 
             return Ok($"You have deleted category with id:{category.Id}");
@@ -140,7 +140,7 @@ namespace HouseholdBudgeter.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("list-of-categories")]
+        [Route("list-of-categories/{id:int}")]
         public IHttpActionResult ListOfCategories(int id)
         {
             var userId = User.Identity.GetUserId();
@@ -153,7 +153,7 @@ namespace HouseholdBudgeter.Controllers
 
             var currentUser = DbContext.Users.FirstOrDefault(p => p.Id == userId);
 
-            if (currentUser != houseHold.OwnerOfHouse || !houseHold.JoinedUsers.Contains(currentUser))
+            if (currentUser != houseHold.OwnerOfHouse && !houseHold.JoinedUsers.Contains(currentUser))
             {
                 return Unauthorized();
             }
