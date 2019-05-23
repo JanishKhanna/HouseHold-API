@@ -26,12 +26,15 @@ namespace HouseholdBudgeter.Models.Domain
 
         public virtual List<Category> Categories { get; set; }
 
+        public virtual List<BankAccount> BankAccounts { get; set; }
+
         public Household()
         {
             Categories = new List<Category>();
             DateCreated = DateTime.Now;
             InvitedUsers = new List<ApplicationUser>();
             JoinedUsers = new List<ApplicationUser>();
+            BankAccounts = new List<BankAccount>();
         }
     }
 }

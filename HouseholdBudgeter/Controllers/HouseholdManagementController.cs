@@ -80,6 +80,11 @@ namespace HouseholdBudgeter.Controllers
         [Route("edit/{id:int}")]
         public IHttpActionResult Edit(int id, HouseholdBindingModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userId = User.Identity.GetUserId();            
             var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
 
@@ -165,12 +170,13 @@ namespace HouseholdBudgeter.Controllers
 
             if(inviteUser == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "User doesn't not exist");
+                return BadRequest(ModelState);
             }
 
             if(inviteUser.Id == houseHold.OwnerOfHouseId)
             {
-                return BadRequest("You cannot urself to the household.");
+                return BadRequest("You cannot invite yourself to the household.");
             }
 
             houseHold.InvitedUsers.Add(inviteUser);
