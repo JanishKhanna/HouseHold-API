@@ -16,7 +16,7 @@ namespace HouseholdBudgeter.Models.Domain
         public virtual Household Household { get; set; }
         public int HouseholdId { get; set; }
 
-        public List<Transaction> Transactions { get; set; }
+        public virtual List<Transaction> Transactions { get; set; }
 
         public Category()
         {

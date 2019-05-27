@@ -4,6 +4,7 @@ using HouseholdBudgeter.Models.Domain;
 using HouseholdBudgeter.Models.ViewModel;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -22,7 +23,7 @@ namespace HouseholdBudgeter.Controllers
         {
             DbContext = new ApplicationDbContext();
         }
-        
+
         [HttpGet]
         [Route("account-by-id/{id:int}", Name = "AccountById")]
         public IHttpActionResult AccountById(int id)
@@ -43,6 +44,11 @@ namespace HouseholdBudgeter.Controllers
         [Route("create-bankaccount/{id:int}")]
         public IHttpActionResult CreateBankAccount(int id, BankAccountBindingModel model)
         {
+            if(model == null)
+            {
+                ModelState.AddModelError(nameof(model), "Invalid form data");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -66,7 +72,6 @@ namespace HouseholdBudgeter.Controllers
             {
                 Name = model.Name,
                 Description = model.Description,
-                HouseholdId = houseHold.Id
             };
 
             houseHold.BankAccounts.Add(bankAccount);
@@ -86,6 +91,16 @@ namespace HouseholdBudgeter.Controllers
         [Route("edit-account/{id:int}")]
         public IHttpActionResult EditAccount(int id, BankAccountBindingModel model)
         {
+            if (model == null)
+            {
+                ModelState.AddModelError(nameof(model), "Invalid form data");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userId = User.Identity.GetUserId();
             var bankAccount = DbContext.BankAccounts.FirstOrDefault(p => p.Id == id);
 
@@ -139,7 +154,9 @@ namespace HouseholdBudgeter.Controllers
         public IHttpActionResult ListOfBankAccounts(int id)
         {
             var userId = User.Identity.GetUserId();
-            var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
+            var houseHold = DbContext.Households
+                .Include(p => p.BankAccounts)
+                .FirstOrDefault(p => p.Id == id);
 
             if (houseHold == null)
             {
@@ -155,7 +172,38 @@ namespace HouseholdBudgeter.Controllers
 
             var viewModel = houseHold.BankAccounts.Select(p => new BankAccountViewModel(p)).ToList();
 
-            return Ok(viewModel);
+            return Ok(viewModel);            
+        }
+
+        [HttpPatch]
+        [Route("update-balance/{id:int}")]
+        public IHttpActionResult UpdateBalance(int id)
+        {
+            var userId = User.Identity.GetUserId();
+            var bankAccount = DbContext.BankAccounts
+                .Include(p => p.Transactions)
+                .FirstOrDefault(p => p.Id == id);
+
+            if (bankAccount == null)
+            {
+                return NotFound();
+            }
+
+            if (userId != bankAccount.Household.OwnerOfHouseId)
+            {
+                return BadRequest("Sorry, You are not allowed to Update the Balance.");
+            }
+
+            var total = bankAccount.Transactions
+                .Where(p => p.VoidTransaction == false)
+                .Select(p => p.Amount)
+                .Sum();
+
+            bankAccount.Balance = total;
+
+            DbContext.SaveChanges();
+
+            return Ok(bankAccount.Balance);
         }
     }
 }

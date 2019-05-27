@@ -44,7 +44,7 @@ namespace HouseholdBudgeter.Controllers
         [HttpPost]
         [Route("create")]
         public IHttpActionResult CreateHouseHold(HouseholdBindingModel model)
-        {            
+        {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -85,7 +85,7 @@ namespace HouseholdBudgeter.Controllers
                 return BadRequest(ModelState);
             }
 
-            var userId = User.Identity.GetUserId();            
+            var userId = User.Identity.GetUserId();
             var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
 
             if (houseHold == null)
@@ -114,15 +114,15 @@ namespace HouseholdBudgeter.Controllers
         [Route("delete/{id:int}")]
         public IHttpActionResult DeleteHouseHold(int id)
         {
-            var userId = User.Identity.GetUserId();            
+            var userId = User.Identity.GetUserId();
             var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
 
-            if(houseHold == null)
+            if (houseHold == null)
             {
                 return NotFound();
-            }           
+            }
 
-            if ( userId != houseHold.OwnerOfHouseId)
+            if (userId != houseHold.OwnerOfHouseId)
             {
                 if (houseHold.JoinedUsers.Any(p => p.Id == userId))
                 {
@@ -135,7 +135,7 @@ namespace HouseholdBudgeter.Controllers
                 }
 
                 return BadRequest("Sorry, You are not allowed to delete this household.");
-            }            
+            }
 
             DbContext.Households.Remove(houseHold);
             DbContext.SaveChanges();
@@ -168,13 +168,13 @@ namespace HouseholdBudgeter.Controllers
 
             var inviteUser = DbContext.Users.FirstOrDefault(p => p.Email == model.Email);
 
-            if(inviteUser == null)
+            if (inviteUser == null)
             {
                 ModelState.AddModelError("", "User doesn't not exist");
                 return BadRequest(ModelState);
             }
 
-            if(inviteUser.Id == houseHold.OwnerOfHouseId)
+            if (inviteUser.Id == houseHold.OwnerOfHouseId)
             {
                 return BadRequest("You cannot invite yourself to the household.");
             }
@@ -201,19 +201,19 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            if(userId == houseHold.OwnerOfHouseId)
+            if (userId == houseHold.OwnerOfHouseId)
             {
                 return BadRequest("Sorry, You cannot join this household.");
             }
 
-            if(!houseHold.InvitedUsers.Any(p => p.Id == userId))
+            if (!houseHold.InvitedUsers.Any(p => p.Id == userId))
             {
                 return BadRequest("You were not invited to this household");
             }
 
             var currentUser = DbContext.Users.FirstOrDefault(p => p.Id == userId);
 
-            if(currentUser == null)
+            if (currentUser == null)
             {
                 return NotFound();
             }

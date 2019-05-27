@@ -29,7 +29,7 @@ namespace HouseholdBudgeter.Controllers
         {
             var category = DbContext.Categories.FirstOrDefault(p => p.Id == id);
 
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
@@ -51,14 +51,14 @@ namespace HouseholdBudgeter.Controllers
 
             var houseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
 
-            if(houseHold == null)
+            if (houseHold == null)
             {
                 return NotFound();
             }
 
             var userId = User.Identity.GetUserId();
 
-            if(userId != houseHold.OwnerOfHouseId)
+            if (userId != houseHold.OwnerOfHouseId)
             {
                 return BadRequest("Sorry, You are not allowed to create categories of this household.");
             }
@@ -67,7 +67,7 @@ namespace HouseholdBudgeter.Controllers
             {
                 Name = model.Name,
                 Description = model.Description,
-                HouseholdId = houseHold.Id,
+                //HouseholdId = houseHold.Id,
             };
 
             houseHold.Categories.Add(category);
@@ -89,15 +89,15 @@ namespace HouseholdBudgeter.Controllers
         public IHttpActionResult EditCategory(int id, CategoryBindingModel model)
         {
             var userId = User.Identity.GetUserId();
-            
+
             var category = DbContext.Categories.FirstOrDefault(p => p.Id == id);
 
-            if(category == null)
+            if (category == null)
             {
                 return NotFound();
             }
 
-            if(userId != category.Household.OwnerOfHouseId)
+            if (userId != category.Household.OwnerOfHouseId)
             {
                 return BadRequest("Sorry, You are not allowed to edit categories of this household.");
             }
@@ -121,7 +121,7 @@ namespace HouseholdBudgeter.Controllers
             var userId = User.Identity.GetUserId();
 
             var category = DbContext.Categories.FirstOrDefault(p => p.Id == id);
-
+            var transaction = category.Transactions.ToList();
             if (category == null)
             {
                 return NotFound();

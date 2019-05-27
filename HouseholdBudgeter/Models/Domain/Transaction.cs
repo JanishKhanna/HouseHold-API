@@ -22,9 +22,13 @@ namespace HouseholdBudgeter.Models.Domain
 
         public bool VoidTransaction { get; set; }
 
+        public virtual ApplicationUser OwnerOfTransaction { get; set; }
+        public string OwnerOfTransactionId { get; set; }
+
         public Transaction()
         {
             DateCreated = DateTime.Now;
+            VoidTransaction = false;
         }
     }
 }

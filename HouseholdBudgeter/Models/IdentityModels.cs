@@ -22,11 +22,14 @@ namespace HouseholdBudgeter.Models
         [InverseProperty(nameof(Household.JoinedUsers))]
         public virtual List<Household> JoinedToHouses { get; set; }
 
+        public virtual List<Transaction> Transactions { get; set; }
+
         public ApplicationUser()
         {
             OwnnedHouses = new List<Household>();
             InvitedToHouses = new List<Household>();
             JoinedToHouses = new List<Household>();
+            Transactions = new List<Transaction>();
         }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
