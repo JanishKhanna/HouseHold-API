@@ -25,6 +25,25 @@ namespace HouseholdBudgeter.Controllers
 
         [Authorize]
         [HttpGet]
+        [Route("get-all-households")]
+        public IHttpActionResult AllHouseholds()
+        {
+            var listOfHouseholds = DbContext.Households.ToList();
+
+            var viewModel = listOfHouseholds
+                .Select(p => new HouseholdViewModel
+                {
+                    Name = p.Name,
+                    Description = p.Description,
+                    DateCreated = p.DateCreated                   
+                }).ToList();
+
+            return Ok(viewModel);
+
+        }
+
+        [Authorize]
+        [HttpGet]
         [Route("by-id/{id:int}", Name = "HouseById")]
         public IHttpActionResult HouseById(int id)
         {
