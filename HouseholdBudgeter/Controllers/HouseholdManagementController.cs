@@ -35,7 +35,9 @@ namespace HouseholdBudgeter.Controllers
                 {
                     Name = p.Name,
                     Description = p.Description,
-                    DateCreated = p.DateCreated                   
+                    DateCreated = p.DateCreated,
+                    HouseholdId = p.Id,
+                    DateUpdated = p.DateUpdated
                 }).ToList();
 
             return Ok(viewModel);
@@ -259,7 +261,7 @@ namespace HouseholdBudgeter.Controllers
 
             var currentUser = DbContext.Users.FirstOrDefault(p => p.Id == userId);
 
-            if (currentUser != houseHold.OwnerOfHouse || !houseHold.JoinedUsers.Contains(currentUser))
+            if (currentUser != houseHold.OwnerOfHouse && !houseHold.JoinedUsers.Contains(currentUser))
             {
                 return Unauthorized();
             }
