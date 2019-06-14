@@ -27,6 +27,8 @@ namespace HouseholdBudgeter.Controllers
         [Route("get-by-id/{id:int}", Name = "CategoryById")]
         public IHttpActionResult CategoryById(int id)
         {
+            var userId = User.Identity.GetUserId();
+
             var category = DbContext.Categories.FirstOrDefault(p => p.Id == id);
 
             if (category == null)
@@ -34,7 +36,10 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            var viewModel = new CategoryViewModel(category);
+            var viewModel = new CategoryViewModel(category)
+            {
+                IsOwner = category.Household.OwnerOfHouseId == userId,
+            };
 
             return Ok(viewModel);
         }
@@ -77,6 +82,7 @@ namespace HouseholdBudgeter.Controllers
 
             var viewModel = new CategoryViewModel(category)
             {
+                IsOwner = houseHold.OwnerOfHouseId == userId,
                 DateUpdated = null
             };
 
@@ -108,7 +114,10 @@ namespace HouseholdBudgeter.Controllers
 
             DbContext.SaveChanges();
 
-            var viewModel = new CategoryViewModel(category);
+            var viewModel = new CategoryViewModel(category)
+            {
+                IsOwner = category.Household.OwnerOfHouseId == userId
+            };
 
             return Ok(viewModel);
         }
@@ -158,7 +167,29 @@ namespace HouseholdBudgeter.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = houseHold.Categories.Select(p => new CategoryViewModel(p)).ToList();
+            var viewModel = houseHold.Categories.Select(p => new CategoryViewModel(p)
+            {
+                IsOwner = houseHold.OwnerOfHouseId == userId,
+            }).ToList();
+
+            return Ok(viewModel);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("get-categories/{id:int}")]
+        public IHttpActionResult GetCategories(int id)
+        {
+            var userId = User.Identity.GetUserId();
+            var bankAccount = DbContext.BankAccounts.FirstOrDefault(p => p.Id == id);
+
+            if (bankAccount == null)
+            {
+                return NotFound();
+            }
+
+            var categories = bankAccount.Household.Categories.ToList();
+            var viewModel = categories.Select(p => new CategoryViewModel(p)).ToList();
 
             return Ok(viewModel);
         }

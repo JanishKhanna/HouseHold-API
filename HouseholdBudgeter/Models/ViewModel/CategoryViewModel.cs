@@ -13,6 +13,8 @@ namespace HouseholdBudgeter.Models.ViewModel
         public string Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
+        public bool IsOwner { get; set; }
+        public int HouseholdId { get; set; }
 
         public CategoryViewModel()
         {
@@ -21,6 +23,7 @@ namespace HouseholdBudgeter.Models.ViewModel
 
         public CategoryViewModel(Category category)
         {
+            HouseholdId = category.HouseholdId;
             CategoryId = category.Id;
             Name = category.Name;
             Description = category.Description;

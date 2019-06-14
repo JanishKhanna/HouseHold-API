@@ -16,5 +16,7 @@ namespace HouseholdBudgeter.Models.BindingModel
         public DateTime DateOfTransaction { get; set; }
         [Required]
         public decimal Amount { get; set; }
+        [Required]
+        public int CategoryId { get; set; }
     }
 }

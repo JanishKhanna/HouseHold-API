@@ -14,6 +14,8 @@ namespace HouseholdBudgeter.Models.ViewModel
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public decimal Balance { get; set; }
+        public int HouseholdId { get; set; }
+        public bool IsOwner { get; set; }
         public List<TransactionViewModel> Transactions { get; set; }
 
         public BankAccountViewModel()
@@ -23,6 +25,7 @@ namespace HouseholdBudgeter.Models.ViewModel
 
         public BankAccountViewModel(BankAccount bankAccount)
         {
+            HouseholdId = bankAccount.HouseholdId;
             AccountId = bankAccount.Id;
             Name = bankAccount.Name;
             Description = bankAccount.Description;
@@ -31,6 +34,5 @@ namespace HouseholdBudgeter.Models.ViewModel
             Balance = bankAccount.Balance;
             Transactions = bankAccount.Transactions.Select(p => new TransactionViewModel(p)).ToList();
         }
-
     }
 }

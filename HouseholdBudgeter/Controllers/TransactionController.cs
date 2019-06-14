@@ -27,6 +27,7 @@ namespace HouseholdBudgeter.Controllers
         [Route("transaction-by-id/{id:int}", Name = "TransactionById")]
         public IHttpActionResult TransactionById(int id)
         {
+            var userId = User.Identity.GetUserId();
             var transaction = DbContext.Transactions.FirstOrDefault(p => p.Id == id);
 
             if (transaction == null)
@@ -34,14 +35,17 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            var viewModel = new TransactionViewModel(transaction);
+            var viewModel = new TransactionViewModel(transaction)
+            {
+                IsOwner = transaction.BankAccount.Household.OwnerOfHouseId == userId
+            };
 
             return Ok(viewModel);
         }
 
         [HttpPost]
-        [Route("create-transaction/{accountId:int}/{categoryId:int}")]
-        public IHttpActionResult CreateTransaction(int accountId, int categoryId, TransactionBindingModel model)
+        [Route("create-transaction/{accountId:int}")]
+        public IHttpActionResult CreateTransaction(int accountId, TransactionBindingModel model)
         {
             if (model == null)
             {
@@ -60,7 +64,7 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            var category = DbContext.Categories.FirstOrDefault(p => p.Id == categoryId);
+            var category = DbContext.Categories.FirstOrDefault(p => p.Id == model.CategoryId);
 
             if (category == null)
             {
@@ -97,7 +101,10 @@ namespace HouseholdBudgeter.Controllers
 
             var url = Url.Link("TransactionById", new { Id = transaction.Id });
 
-            var viewModel = new TransactionViewModel(transaction);
+            var viewModel = new TransactionViewModel(transaction)
+            {
+                IsOwner = bankAccount.Household.OwnerOfHouseId == userId || transaction.OwnerOfTransactionId == userId
+            };
 
             return Created(url, viewModel);
         }
@@ -155,7 +162,10 @@ namespace HouseholdBudgeter.Controllers
 
             DbContext.SaveChanges();
 
-            var viewModel = new TransactionViewModel(transaction);
+            var viewModel = new TransactionViewModel(transaction)
+            {
+                IsOwner = transaction.BankAccount.Household.OwnerOfHouseId == userId || transaction.OwnerOfTransactionId == userId
+            };
 
             return Ok(viewModel);
         }
@@ -210,7 +220,10 @@ namespace HouseholdBudgeter.Controllers
 
             DbContext.SaveChanges();
 
-            var viewModel = new TransactionViewModel(transaction);
+            var viewModel = new TransactionViewModel(transaction)
+            {
+                IsOwner = transaction.BankAccount.Household.OwnerOfHouseId == userId || transaction.OwnerOfTransactionId == userId
+            };
 
             return Ok(viewModel);
         }
@@ -233,7 +246,10 @@ namespace HouseholdBudgeter.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = bankAccount.Transactions.Select(p => new TransactionViewModel(p)).ToList();
+            var viewModel = bankAccount.Transactions.Select(p => new TransactionViewModel(p)
+            {
+                IsOwner = bankAccount.Household.OwnerOfHouseId == userId || p.OwnerOfTransactionId == userId
+            }).ToList();
 
             return Ok(viewModel);
         }

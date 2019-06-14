@@ -241,6 +241,7 @@
     <Compile Include="Models\ViewModel\BankAccountViewModel.cs" />
     <Compile Include="Models\ViewModel\CategoryViewModel.cs" />
     <Compile Include="Models\ViewModel\HouseholdViewModel.cs" />
+    <Compile Include="Models\ViewModel\InviteViewModel.cs" />
     <Compile Include="Models\ViewModel\TransactionViewModel.cs" />
     <Compile Include="Models\ViewModel\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -28,20 +28,21 @@ namespace HouseholdBudgeter.Controllers
         [Route("get-all-households")]
         public IHttpActionResult AllHouseholds()
         {
-            var listOfHouseholds = DbContext.Households.ToList();
+            var userId = User.Identity.GetUserId();
+
+            var listOfHouseholds = DbContext.Households
+                .Where(p => p.OwnerOfHouseId == userId ||
+                p.InvitedUsers.Any(t => t.Id == userId) ||
+                p.JoinedUsers.Any(m => m.Id == userId)).ToList();
 
             var viewModel = listOfHouseholds
-                .Select(p => new HouseholdViewModel
+                .Select(p => new HouseholdViewModel(p)
                 {
-                    Name = p.Name,
-                    Description = p.Description,
-                    DateCreated = p.DateCreated,
-                    HouseholdId = p.Id,
-                    DateUpdated = p.DateUpdated
-                }).ToList();
+                    IsOwner = p.OwnerOfHouseId == userId,
+                    NumberOfUsers = p.JoinedUsers.Count() + 1,
+                });
 
             return Ok(viewModel);
-
         }
 
         [Authorize]
@@ -49,6 +50,8 @@ namespace HouseholdBudgeter.Controllers
         [Route("by-id/{id:int}", Name = "HouseById")]
         public IHttpActionResult HouseById(int id)
         {
+            var userId = User.Identity.GetUserId();
+
             var myHouseHold = DbContext.Households.FirstOrDefault(p => p.Id == id);
 
             if (myHouseHold == null)
@@ -56,7 +59,10 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            var viewModel = new HouseholdViewModel(myHouseHold);
+            var viewModel = new HouseholdViewModel(myHouseHold)
+            {
+                IsOwner = myHouseHold.OwnerOfHouse.Id == userId
+            };
 
             return Ok(viewModel);
         }
@@ -210,6 +216,25 @@ namespace HouseholdBudgeter.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        [Route("get-invites")]
+        public IHttpActionResult GetInvites()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = DbContext.Users.FirstOrDefault(p => p.Id == userId);
+
+            var viewModel = user.InvitedToHouses
+                .Select(p => new InviteViewModel
+                {
+                    HouseholdId = p.Id,
+                    Name = p.Name,
+                    OwnerName = p.OwnerOfHouse.UserName
+                }).ToList();
+
+            return Ok(viewModel);
+        }
+
+        [Authorize]
         [HttpPost]
         [Route("join/{id:int}")]
         public IHttpActionResult Join(int id)
@@ -273,5 +298,15 @@ namespace HouseholdBudgeter.Controllers
 
             return Ok(viewModel);
         }
+
+        //[Authorize]
+        //[HttpGet]
+        //[Route("details/{id:int}")]
+        //public IHttpActionResult Details(int id)
+        //{
+        //    var userId = User.Identity.GetUserId();
+        //    var household = DbContext.Households.FirstOrDefault(p => p.Id == id);
+        //    var bankAccounts = household.BankAccounts;
+        //}
     }
 }

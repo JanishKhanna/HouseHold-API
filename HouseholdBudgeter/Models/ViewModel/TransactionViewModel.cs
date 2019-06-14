@@ -16,6 +16,10 @@ namespace HouseholdBudgeter.Models.ViewModel
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
         public bool VoidTransaction { get; set; }
+        public int CategoryId { get; set; }
+        public int BankAccountId { get; set; }
+        public string OwnerOfTransactionId { get; set; }
+        public bool IsOwner { get; set; }
 
         public TransactionViewModel()
         {
@@ -24,6 +28,9 @@ namespace HouseholdBudgeter.Models.ViewModel
 
         public TransactionViewModel(Transaction transaction)
         {
+            CategoryId = transaction.CategoryId;
+            BankAccountId = transaction.BankAccountId;
+            OwnerOfTransactionId = transaction.OwnerOfTransactionId;
             TransactionId = transaction.Id;
             Title = transaction.Title;
             Description = transaction.Description;

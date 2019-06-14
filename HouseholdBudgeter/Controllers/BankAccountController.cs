@@ -28,6 +28,8 @@ namespace HouseholdBudgeter.Controllers
         [Route("account-by-id/{id:int}", Name = "AccountById")]
         public IHttpActionResult AccountById(int id)
         {
+            var userId = User.Identity.GetUserId();
+
             var bankAccount = DbContext.BankAccounts.FirstOrDefault(p => p.Id == id);
 
             if (bankAccount == null)
@@ -35,7 +37,10 @@ namespace HouseholdBudgeter.Controllers
                 return NotFound();
             }
 
-            var viewModel = new BankAccountViewModel(bankAccount);
+            var viewModel = new BankAccountViewModel(bankAccount)
+            {
+                IsOwner = bankAccount.Household.OwnerOfHouse.Id == userId
+            };
 
             return Ok(viewModel);
         }
@@ -81,7 +86,8 @@ namespace HouseholdBudgeter.Controllers
 
             var viewModel = new BankAccountViewModel(bankAccount)
             {
-                DateUpdated = null
+                DateUpdated = null,
+                IsOwner = houseHold.OwnerOfHouse.Id == userId
             };
 
             return Created(url, viewModel);
@@ -120,7 +126,10 @@ namespace HouseholdBudgeter.Controllers
 
             DbContext.SaveChanges();
 
-            var viewModel = new BankAccountViewModel(bankAccount);
+            var viewModel = new BankAccountViewModel(bankAccount)
+            {
+                IsOwner = bankAccount.Household.OwnerOfHouse.Id == userId
+            };
 
             return Ok(viewModel);
         }
@@ -170,12 +179,15 @@ namespace HouseholdBudgeter.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = houseHold.BankAccounts.Select(p => new BankAccountViewModel(p)).ToList();
+            var viewModel = houseHold.BankAccounts.Select(p => new BankAccountViewModel(p)
+            {
+                IsOwner = houseHold.OwnerOfHouse.Id == userId
+            }).ToList();
 
             return Ok(viewModel);            
         }
 
-        [HttpPatch]
+        [HttpPut]
         [Route("update-balance/{id:int}")]
         public IHttpActionResult UpdateBalance(int id)
         {
